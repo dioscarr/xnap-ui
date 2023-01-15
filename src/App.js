@@ -90,7 +90,7 @@ function App() {
             <div>
               <div className="mdc-select" role="listbox">
                 <select
-                  className="mdc-select__native-control"
+                  className="mdl-textfield__input"
                   value={selectedParent}
                   onChange={(e) => setSelectedParent(e.target.value)}
                 >
@@ -106,7 +106,7 @@ function App() {
                 <div className="mdc-line-ripple"></div>
               </div>
               <div className="mdc-select" role="listbox">
-                <select className="mdc-select__native-control">
+                <select className="mdl-textfield__input">
                   <option value="" disabled>
                     Select Child Alias
                   </option>
