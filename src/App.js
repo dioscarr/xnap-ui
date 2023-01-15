@@ -77,8 +77,12 @@ function App() {
           {leads.map(lead => (
             <tr key={lead._id}>
               <td className="mdl-data-table__cell--non-numeric">{lead.xname}</td>
-              <td className="mdl-data-table__cell--non-numeric">{lead.xphone}</td>
-              <td className="mdl-data-table__cell--non-numeric">{lead.xurl}</td>
+              <td className="mdl-data-table__cell--non-numeric">
+                <a href={`tel:${lead.xphone}`}>{lead.xphone}</a>
+              </td>              
+              <td className="mdl-data-table__cell--non-numeric">
+                <a href={lead.xurl} target="_blank">{lead.xurl}</a>
+            </td>
               <td className="mdl-data-table__cell--non-numeric">{lead.citystate}</td>
               <td className="mdl-data-table__cell--non-numeric">{lead.categories}</td>
               <td className="mdl-data-table__cell--non-numeric">{lead.review_count}</td>
