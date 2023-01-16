@@ -29,7 +29,7 @@ function App() {
       axios.get("https://xnap1.onrender.com/Leads").then((res) => {
         const leads = res.data;
         console.log(leads);
-        SetLeads(leads?.sort()?.reverse()?.slice(0,12));
+        SetLeads(leads?.sort()?.reverse());
       });
   } catch (error) {
     console.log(error.message);
@@ -72,7 +72,7 @@ console.log(selectcat)
     //axios.get("http://localhost:3001/Leads").then((res) => {
         const leads = res.data;
         console.log(leads);
-        SetLeads(leads?.sort()?.reverse()?.slice(0,100));
+        SetLeads(leads?.sort()?.reverse());
       }); 
     });
   };
