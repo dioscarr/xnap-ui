@@ -11,44 +11,44 @@ function App() {
 
   const [data, setData] = useState([]);
   const [parentAliases, setParentAliases] = useState([]);
-  const [childAliases, setChildAliases] = useState([]);
+  const [selectedCategory, setChildAliases] = useState([]);
   const [selectedParent, setSelectedParent] = useState("");
+  const [selectcat,setSelectedCat] = useState("");
 
   useEffect(() => {
-    axios
-      .get("https://xnap1.onrender.com/yelpcats")
-      .then((response) => {
-        setData(response.data);
-        setParentAliases(
-          Array.from(
-            new Set(response.data.map((item) => item.parent_aliases[0]))
-          )
-        );
-      })
-      .catch((err) => console.log(err));
-
+   try {
+      axios
+      // .get("https://xnap1.onrender.com/yelpcats")
+        .get("https://xnap1.onrender.com/yelpcats")
+        .then((response) => {
+          setData(response.data);
+          setParentAliases(response.data.map((item) => item.parent_aliases[0]));
+        })
+        .catch((err) => console.log(err));
 
       axios.get("https://xnap1.onrender.com/Leads").then((res) => {
         const leads = res.data;
         console.log(leads);
-        SetLeads(leads);
+        SetLeads(leads?.sort()?.reverse()?.slice(0,12));
       });
-
+  } catch (error) {
+    console.log(error.message);
+  }
   }, []);
 
   useEffect(() => {
     if (selectedParent) {
+   
       setChildAliases(
         data
           .filter((item) => item.parent_aliases[0] === selectedParent)
-          .map((item) => item.alias)
+          .map((item) => { return {alises:item.alias,title:item.title}})
       );
     } else {
       setChildAliases([]);
     }
   }, [selectedParent, data]);
 
- 
   const states = State.getStatesOfCountry("US").map((state) => (
     <option key={state.id} value={state.isoCode}>
       {state.name}
@@ -60,12 +60,20 @@ function App() {
     </option>
   ));
   const addone = () => {
-    axios.get("https://xnap1.onrender.com/").then((res) => {
-      axios.get("https://xnap1.onrender.com/Leads").then((res) => {
+console.log(selectcat)
+
+     axios.get(`https://xnap1.onrender.com/BusinessSearch?location=${selectedCity} ${selectedState}&category=${selectcat}`).then((res) => {
+   // axios.get(`http://localhost:3001?location=${selectedCity} ${selectedState}&category=${selectcat}`).then((res) => {
+      
+    console.log(res.data);
+    alert(JSON.stringify(res.data));
+    
+    axios.get("https://xnap1.onrender.com/Leads").then((res) => {
+    //axios.get("http://localhost:3001/Leads").then((res) => {
         const leads = res.data;
         console.log(leads);
-        SetLeads(leads);
-      });
+        SetLeads(leads?.sort()?.reverse()?.slice(0,100));
+      }); 
     });
   };
 
@@ -85,44 +93,9 @@ function App() {
   return (
     <table className="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
       <thead>
+
         <tr>
-          <th colSpan={10}>
-            <div>
-              <div className="mdc-select" role="listbox">
-                <select
-                  className="mdl-textfield__input"
-                  value={selectedParent}
-                  onChange={(e) => setSelectedParent(e.target.value)}
-                >
-                  <option value="" disabled>
-                    Select Parent Alias
-                  </option>
-                  {parentAliases.map((item,i) => (
-                    <option key={i} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="mdc-line-ripple"></div>
-              </div>
-              <div className="mdc-select" role="listbox">
-                <select className="mdl-textfield__input">
-                  <option value="" disabled>
-                    Select Child Alias
-                  </option>
-                  {childAliases.map((item,i) => (
-                    <option key={i} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="mdc-line-ripple"></div>
-              </div>
-            </div>
-          </th>
-        </tr>
-        <tr>
-          <th colSpan={3}>
+          <th colSpan={2}>
             <div>
               <select
                 className="mdl-textfield__input"
@@ -133,7 +106,7 @@ function App() {
               </select>
             </div>
           </th>
-          <th colSpan={3}>
+          <th colSpan={2}>
             <div>
               {selectedState}
               <select
@@ -146,7 +119,48 @@ function App() {
               </select>
             </div>
           </th>
-          <th colSpan={1}></th>
+          <th colSpan={2}>
+            <div className="mdc-select" role="listbox">
+              <select
+                className="mdl-textfield__input"
+                value={selectedParent}
+                onChange={(e) => setSelectedParent(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select Parent Alias
+                </option>
+                {parentAliases.map((item, i) => (
+                  <option key={i} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+              <div className="mdc-line-ripple"></div>
+            </div>
+          </th>
+          <th colSpan={2}>
+            <div className="mdc-select" role="listbox">
+              <select className="mdl-textfield__input" onChange={(e)=>setSelectedCat(e.target.value)}>
+                <option value="" disabled>
+                  Select Child Alias
+                </option>
+                {selectedCategory.map((item, i) => (
+                  <option key={i} value={item.alises}>
+                    {item.title}
+                  </option>
+                ))}
+              </select>
+              <div className="mdc-line-ripple"></div>
+            </div>
+          </th>
+          <th colSpan={1}>
+            <button
+              className="mdl-button mdl-js-button mdl-button--icon"
+              onClick={() => addone()}
+            >
+              <i className="material-icons">search</i>
+            </button>
+          </th>
         </tr>
         <tr>
           <th className="mdl-data-table__cell--non-numeric">Name</th>
@@ -161,17 +175,8 @@ function App() {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td colSpan={7}>
-            <button
-              className="mdl-button mdl-js-button mdl-button--icon"
-              onClick={() => addone()}
-            >
-              <i className="material-icons">add</i>
-            </button>
-          </td>
-        </tr>
-        {leads.map((lead) => (
+     
+        {leads?.map((lead) => (
           <tr key={lead._id}>
             <td className="mdl-data-table__cell--non-numeric">{lead.xname}</td>
             <td className="mdl-data-table__cell--non-numeric">
